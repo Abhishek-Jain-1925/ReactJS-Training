@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import TodoList from './TodoList';
 import Routing from './Routing';
+import GetData from './components/GetData';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -12,8 +13,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     {/* <App /> */}
-    <TodoList/>
+    {/* <TodoList/> */}
     {/* <Routing/>  */}
+    <GetData/>
   </React.StrictMode>
 );
 
