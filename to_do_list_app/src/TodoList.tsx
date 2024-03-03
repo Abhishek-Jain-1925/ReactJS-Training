@@ -1,23 +1,6 @@
 import { useState } from "react";
-import {useFetch} from "./components/useFetch";
-
-const TODO_DUMMY_LIST = [
-  {
-    id: 1,
-    task: "Build To-Do App",
-    isComplete: false,
-  },
-  {
-    id: 2,
-    task: "Deploy Project",
-    isComplete: false,
-  },
-  {
-    id: 3,
-    task: "Assignment on LMS",
-    isComplete: true,
-  },
-];
+import Dto from "./Dto";
+import { Link, useNavigate } from "react-router-dom";
 
 interface ITodoElement {
   id: number;
@@ -26,33 +9,32 @@ interface ITodoElement {
 }
 const TodoList = () => {
   const [checked, setChecked] = useState(false);
-  const [todos, setTodos] = useState<Array<ITodoElement>>(TODO_DUMMY_LIST);
-  const [str, setStr] = useState("");
+  const [todos, setTodos] = useState<Array<ITodoElement>>(Dto);
+  const navigate = useNavigate();
 
   const handleStatus = (item: ITodoElement) => {
     setChecked(!checked);
     item.isComplete = !item.isComplete;
   };
 
-  const handleInput = (str: string) => {
-    setStr(str);
+  const deleteItemByKey = (array: ITodoElement[], key: keyof ITodoElement, value: number | string | boolean) => {
+    const index = array.findIndex(item => item[key] === value);
+    if (index !== -1) {
+      array.splice(index, 1);
+    }
+    return array;
   };
 
-  const addTodo = () => {
-    const todo = {
-      id: Math.random() * 2000,
-      task: str,
-      isComplete: false,
-    };
-    setTodos([...todos, todo]);
-    setStr("");
-  };
+  const handleCard = (item: ITodoElement)=>{
+    navigate(`/todo/details/${item.id}`)
+  }
 
   const handleDelete = (item: ITodoElement) => {
     // if (confirm("Are you sure you want to delete this Task?")) {
     //   setTodos(todos.filter((value) => item.id !== value.id));
     // }
     setTodos(todos.filter((value) => item.id !== value.id));
+    deleteItemByKey(Dto,"id",item.id);
 
   };
 
@@ -60,19 +42,32 @@ const TodoList = () => {
     <div className="contents">
       <center>
         <h1> ToDo App </h1>
-        <input type="text" value={str}  autoFocus onChange={(e) => handleInput(e.target.value)} />
-        &nbsp;&nbsp;
-        <button onClick={addTodo} disabled={!Boolean(str.length)} className="btn btn-secondary">
-          Add
-        </button>
+        {/* <input type="text" value={str}  autoFocus onChange={(e) => handleInput(e.target.value)} />
+        &nbsp;&nbsp; */}
+        <Link to={"/add/todo"}>
+          <button className="btn btn-secondary">Add New Item</button>
+        </Link>
         {todos.map((item) => (
-          <div className="card w-50" key={item.id}
-            style={{ border: "0.1px solid grey", margin: "10px" }} >
-            <div className="card-header" style={{textDecoration: item.isComplete ? "line-through":"none"}}>
+          <div
+            className="card w-50"
+            key={item.id}
+            style={{ border: "0.1px solid grey", margin: "10px", cursor:"pointer"}}
+          >
+            <div
+              className="card-header"
+              style={{
+                textDecoration: item.isComplete ? "line-through" : "none",
+              }}
+              onClick={() => handleCard(item)}
+            >
               <h5>
-                <input type="checkbox" name={item.task} checked={item.isComplete}
+                <input
+                  type="checkbox"
+                  name={item.task}
+                  checked={item.isComplete}
                   onChange={() => handleStatus(item)}
-                /> &nbsp;&nbsp;
+                />{" "}
+                &nbsp;&nbsp;
                 {item.task}
               </h5>
             </div>
@@ -81,7 +76,10 @@ const TodoList = () => {
               <p className="card-text">
                 <strong>Status :</strong>{" "}
                 {item.isComplete ? "Completed" : "Incomplete"}&nbsp;&nbsp;
-                <button className="btn btn-secondary" onClick={() => handleDelete(item)} >
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => handleDelete(item)}
+                >
                   Delete
                 </button>
               </p>
